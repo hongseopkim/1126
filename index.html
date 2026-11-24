@@ -745,7 +745,6 @@
 
   function updateFreshness() {
     if (!state.lastSync) return;
-    const time = new Intl.DateTimeFormat('ko-KR', { timeZone: CONFIG.timezone || 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(state.lastSync);
     $('lastSynced').textContent = `데이터 기준 ${new Intl.DateTimeFormat('ko-KR', { timeZone: CONFIG.timezone || 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(state.lastSync)}`;
   }
 
@@ -801,7 +800,7 @@
   function getSearchSourceUrl(sheet, rowNumber) {
     const gid = sheet.sheetId;
     const range = `A${Math.max(1, rowNumber)}:Z${Math.max(1, rowNumber)}`;
-    return `https://docs.google.com/spreadsheets/d/${CONFIG.spreadsheetId}/edit?gid=${gid}#gid=${gid}&range=${encodeURIComponent(range)}`;
+    return '';
   }
 
   function searchWorkbook(query) {
@@ -861,7 +860,7 @@
     appendChatMessage('user', trimmed);
     $('chatInput').value = '';
     if (!state.workbook.length) {
-      appendChatMessage('assistant', '스프레드시트가 아직 연결되지 않았습니다. 화면 상단의 새로고침을 눌러 다시 연결해 주세요.');
+      appendChatMessage('assistant', '행사 데이터를 아직 불러오지 못했습니다. 화면 상단의 새로고침을 눌러 다시 시도해 주세요.');
       return;
     }
     const results = searchWorkbook(trimmed);
@@ -877,11 +876,11 @@
   }
 
   function bindEvents() {
-    $('pinInput').addEventListener('input', (event) => { event.target.value = event.target.value.replace(/\\D/g, '').slice(0, 4); });
+    $('pinInput').addEventListener('input', (event) => { event.target.value = event.target.value.replace(/\D/g, '').slice(0, 4); });
     $('pinForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       const pin = $('pinInput').value.trim();
-      if (!/^\\d{4}$/.test(pin)) { $('pinError').textContent = '숫자 4자리를 입력해 주세요.'; return; }
+      if (!/^\d{4}$/.test(pin)) { $('pinError').textContent = '숫자 4자리를 입력해 주세요.'; return; }
       $('pinSubmit').disabled = true;
       $('pinSubmit').textContent = '확인 중...';
       $('pinError').textContent = '';
