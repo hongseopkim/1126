@@ -49,6 +49,27 @@
 .pin-side-copy small{font-size:9px;letter-spacing:.15em;color:#B7B3AD}
 @media(max-width:760px){.pin-gate{grid-template-columns:1fr}.pin-panel{padding:30px 24px;min-height:100svh;display:flex;flex-direction:column;justify-content:center}.pin-kicker{margin-top:48px}.pin-side{display:none}.pin-input{height:56px}}
 
+  
+/* Structured chatbot result cards */
+.directory-card,.parking-card,.catering-card{background:#fff;border:1px solid #EAE6E0;border-radius:14px;padding:12px;margin:9px 0;overflow:hidden}
+.structured-card-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.structured-card-head strong{font:12px var(--medium);color:#24211E}
+.structured-card-head span{font-size:9px;color:#817B73;background:#F5F3F0;border-radius:99px;padding:5px 8px}
+.structured-card-sub{font-size:10px;color:#6F6961;line-height:1.6;margin:0 0 10px}
+.directory-table,.parking-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10px}
+.directory-table th,.parking-table th{background:#F6F4F1;color:#756E66;text-align:left;padding:9px 10px;font:10px var(--medium)}
+.directory-table td,.parking-table td{padding:9px 10px;border-top:1px solid #EEEAE5;line-height:1.45;vertical-align:middle;overflow-wrap:anywhere}
+.directory-table td:first-child{width:62%;color:#615A52}
+.directory-table td:last-child,.parking-table td:last-child{font:11px var(--medium);color:#25221F}
+.parking-guide{background:#FCEDEA;border:1px solid #F3D8D3;border-radius:11px;padding:10px 11px;margin-bottom:10px}
+.parking-guide b{display:block;color:#A33129;font:10px var(--medium);margin-bottom:5px}
+.parking-guide p{font-size:10px;line-height:1.55;color:#554B45;margin:0}
+.parking-note{display:inline-block;background:#F5F3F0;color:#766E66;border-radius:99px;padding:4px 7px;font-size:9px}
+.catering-section+.catering-section{border-top:1px solid #EEEAE5;margin-top:11px;padding-top:10px}
+.catering-section h4{font:10px var(--medium);color:#A33129;margin:0 0 8px}
+.catering-items{display:flex;flex-wrap:wrap;gap:6px}
+.catering-item{display:inline-flex;align-items:center;border:1px solid #EAE6E0;background:#FBFAF8;border-radius:9px;padding:7px 9px;font-size:10px;color:#403B35;line-height:1.4}
+
   </style>
   <script src="config.js"></script>
 
@@ -132,7 +153,7 @@
   <div id="chatPanel" class="chat-panel hidden" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
     <div class="chat-header"><div class="chat-avatar"><svg viewBox="0 0 24 24"><path d="M12 3a8 8 0 0 0-8 8v3a2 2 0 0 0 2 2h1v-5H5a7 7 0 0 1 14 0h-2v5h1a2 2 0 0 0 2-2v-3a8 8 0 0 0-8-8Z"/><path d="M8 18c1 1 2.2 1.5 4 1.5s3-.5 4-1.5"/></svg></div><div><strong id="chatTitle">행사 운영 도우미</strong><small>스프레드시트 전체 내용을 검색합니다.</small></div><button id="closeChat" class="close-button" type="button" aria-label="도우미 닫기">×</button></div>
     <div id="chatMessages" class="chat-messages"><div class="assistant-message"><strong>안녕하세요!</strong><p>행사 운영에 필요한 내용을 찾아드릴게요. 예를 들어 <b>내빈</b>, <b>주차</b>, <b>케이터링</b>, <b>김홍섭</b>처럼 검색해 보세요.</p></div></div>
-    <div class="suggestion-row"><button type="button" data-query="내빈">내빈 명단</button><button type="button" data-query="주차">주차 안내</button><button type="button" data-query="물품">물품 리스트</button><button type="button" data-query="케이터링">케이터링</button></div>
+    <div class="suggestion-row"><button type="button" data-query="내빈 명단">내빈 명단</button><button type="button" data-query="주차">주차 등록 차량</button><button type="button" data-query="케이터링">케이터링 품목</button></div>
     <form id="chatForm" class="chat-form"><input id="chatInput" type="search" autocomplete="off" placeholder="무엇이 궁금하세요?" aria-label="검색어 입력"><button type="submit" aria-label="검색"><svg viewBox="0 0 24 24"><path d="m21 21-4.4-4.4M19 10.5a8.5 8.5 0 1 1-17 0 8.5 8.5 0 0 1 17 0Z"/></svg></button></form>
     <div class="chat-privacy">연락처와 이메일은 검색 결과에 표시하지 않습니다.</div>
   </div>
@@ -807,13 +828,115 @@
     return '';
   }
 
+  function getSheetRows(title) {
+    const sheet = state.workbook.find((item) => item.title === title);
+    return sheet?.values || [];
+  }
+
+  function getGuestEntries() {
+    return getSheetRows('내빈 명단').slice(1)
+      .map((row) => ({ affiliation: String(row[0] ?? '').trim(), name: String(row[1] ?? '').trim() }))
+      .filter((item) => item.affiliation && item.name)
+      .sort((a, b) => a.affiliation.localeCompare(b.affiliation, 'ko') || a.name.localeCompare(b.name, 'ko'));
+  }
+
+  function getParkingEntries() {
+    return getSheetRows('주차정보').slice(1)
+      .map((row) => ({ driver: String(row[0] ?? '').trim() || '차량 이용자 미기재', plate: String(row[1] ?? '').trim(), note: String(row[2] ?? '').trim() }))
+      .filter((item) => item.plate);
+  }
+
+  function getParkingGuide() {
+    return getSheetRows('주차 안내').slice(1)
+      .map((row) => ({ label: String(row[0] ?? '').trim(), text: String(row[1] ?? '').trim() }))
+      .filter((item) => item.label && item.text);
+  }
+
+  function getCateringData() {
+    const rows = getSheetRows('케이터링').slice(1);
+    const groups = new Map();
+    let company = '';
+    rows.forEach((row) => {
+      const rowCompany = String(row[0] ?? '').trim();
+      const category = String(row[1] ?? '').trim() || '기타';
+      const item = String(row[2] ?? '').trim();
+      if (rowCompany) company = rowCompany;
+      if (!item) return;
+      if (!groups.has(category)) groups.set(category, []);
+      groups.get(category).push(item);
+    });
+    return { company, groups: Array.from(groups.entries()) };
+  }
+
+  function renderGuestDirectory(query) {
+    const guests = getGuestEntries();
+    const q = normalize(query);
+    const filtered = q.includes('내빈') || q.includes('명단')
+      ? guests
+      : guests.filter((item) => normalize(item.affiliation + item.name).includes(q));
+    if (!filtered.length) {
+      appendChatMessage('assistant', '일치하는 내빈 정보를 찾지 못했습니다.');
+      return;
+    }
+    const rows = filtered.map((item) => `<tr><td>${escapeHtml(item.affiliation)}</td><td>${escapeHtml(item.name)}</td></tr>`).join('');
+    const html = `<strong>내빈 명단</strong><p>소속 기준으로 정렬했습니다. 총 ${filtered.length}명입니다.</p>
+      <article class="directory-card">
+        <div class="structured-card-head"><strong>초청 내빈</strong><span>${filtered.length}명</span></div>
+        <table class="directory-table"><thead><tr><th>소속</th><th>이름</th></tr></thead><tbody>${rows}</tbody></table>
+      </article>`;
+    appendChatMessage('assistant', html, true);
+  }
+
+  function renderParkingDirectory(query) {
+    const entries = getParkingEntries();
+    const guide = getParkingGuide();
+    const q = normalize(query);
+    const filtered = q === '주차' || q.includes('주차안내') || q.includes('차량')
+      ? entries
+      : entries.filter((item) => normalize(item.driver + item.plate + item.note).includes(q));
+    if (!filtered.length) {
+      appendChatMessage('assistant', '등록된 차량 정보에서 일치하는 항목을 찾지 못했습니다.');
+      return;
+    }
+    const guideHtml = guide.length
+      ? `<div class="parking-guide"><b>주차 안내</b>${guide.map((item) => `<p><strong>${escapeHtml(item.label)}:</strong> ${escapeHtml(item.text)}</p>`).join('')}</div>`
+      : '';
+    const rows = filtered.map((item) => `<tr><td>${escapeHtml(item.driver)}</td><td>${escapeHtml(item.plate)}${item.note ? `<br><span class="parking-note">${escapeHtml(item.note)}</span>` : ''}</td></tr>`).join('');
+    const html = `<strong>주차 등록 차량</strong><p>차량번호가 등록된 차량만 표시합니다. 총 ${filtered.length}대입니다.</p>
+      <article class="parking-card">${guideHtml}
+        <div class="structured-card-head"><strong>등록 차량 목록</strong><span>${filtered.length}대</span></div>
+        <table class="parking-table"><thead><tr><th>차량 이용자</th><th>등록 차량번호</th></tr></thead><tbody>${rows}</tbody></table>
+      </article>`;
+    appendChatMessage('assistant', html, true);
+  }
+
+  function renderCateringDirectory() {
+    const data = getCateringData();
+    const count = data.groups.reduce((sum, group) => sum + group[1].length, 0);
+    if (!data.company || !count) {
+      appendChatMessage('assistant', '케이터링 업체 또는 품목 정보를 찾지 못했습니다.');
+      return;
+    }
+    const groups = data.groups.map(([category, items]) => `
+      <section class="catering-section">
+        <h4>${escapeHtml(category)} · ${items.length}종</h4>
+        <div class="catering-items">${items.map((item) => `<span class="catering-item">${escapeHtml(item)}</span>`).join('')}</div>
+      </section>`).join('');
+    const html = `<strong>케이터링 품목</strong><p>업체명과 전체 주문 품목만 정리했습니다.</p>
+      <article class="catering-card">
+        <div class="structured-card-head"><strong>${escapeHtml(data.company)}</strong><span>전체 ${count}개 품목</span></div>
+        ${groups}
+      </article>`;
+    appendChatMessage('assistant', html, true);
+  }
+
   function searchWorkbook(query) {
     const q = normalize(query);
     if (!q) return [];
     const results = [];
     const maxResults = 35;
     state.workbook.forEach((sheet) => {
-      if (results.length >= maxResults) return;
+      if (results.length >= maxResults || sheet.title === '물품리스트') return;
       const values = sheet.values || [];
       const sheetMatches = normalize(sheet.title).includes(q);
       const headerInfo = detectHeaderRow(values);
@@ -865,6 +988,23 @@
     $('chatInput').value = '';
     if (!state.workbook.length) {
       appendChatMessage('assistant', '행사 데이터를 아직 불러오지 못했습니다. 화면 상단의 새로고침을 눌러 다시 시도해 주세요.');
+      return;
+    }
+    const q = normalize(trimmed);
+    if (q.includes('물품리스트') || q.includes('물품목록')) {
+      appendChatMessage('assistant', '물품 리스트는 요청에 따라 검색 대상에서 제외했습니다.');
+      return;
+    }
+    if (q.includes('내빈') || q.includes('명단')) {
+      renderGuestDirectory(trimmed);
+      return;
+    }
+    if (q.includes('주차') || q.includes('주차등록차량')) {
+      renderParkingDirectory(trimmed);
+      return;
+    }
+    if (q.includes('케이터링') || q.includes('카페부름')) {
+      renderCateringDirectory();
       return;
     }
     const results = searchWorkbook(trimmed);
