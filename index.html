@@ -28,44 +28,18 @@
 
   </style>
   <script src="config.js"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 </head>
 <body>
-  <div id="loginGate" class="login-gate">
-    <div class="login-panel">
-      <div class="brand-lockup">
-        <div class="brand-symbol">SCK</div>
-        <div><strong>1126 WORK GUIDE</strong><span>EVENT OPERATIONS</span></div>
-      </div>
-      <div class="login-kicker">YOUR EVENT, IN REAL TIME</div>
-      <h1>오늘의 업무를<br><em>한눈에</em> 확인하세요.</h1>
-      <p class="login-copy">이름을 선택하면 현재 업무와 다음 순서, 현장 주의사항을 안내합니다. 행사 자료는 Google 계정으로 인증한 사용자에게만 표시됩니다.</p>
-      <div id="configWarning" class="notice notice-warn hidden"></div>
-      <button id="googleSignIn" class="google-login" type="button">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.35 12.23c0-.72-.06-1.42-.18-2.09H12v3.96h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.26Z"/><path fill="#34A853" d="M12 21.6c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.53A9.74 9.74 0 0 0 12 21.6Z"/><path fill="#FBBC05" d="M6.54 13.68A5.85 5.85 0 0 1 6.24 12c0-.58.1-1.14.3-1.68V7.79H3.3A9.72 9.72 0 0 0 2.25 12c0 1.57.38 3.06 1.05 4.21l3.24-2.53Z"/><path fill="#EA4335" d="M12 6.29c1.43 0 2.71.49 3.72 1.46l2.79-2.79C16.84 3.38 14.63 2.4 12 2.4a9.74 9.74 0 0 0-8.7 5.39l3.24 2.53C7.31 8.01 9.46 6.29 12 6.29Z"/></svg>
-        Google 계정으로 시작하기
-      </button>
-      <p id="loginMessage" class="login-message" role="status">회사 Google 계정으로 로그인해 주세요.</p>
-      <div class="login-foot"><span class="secure-dot"></span> Google 스프레드시트 읽기 전용 연결 · 데이터 별도 저장 안 함</div>
-    </div>
-    <div class="login-side">
-      <div class="side-orbit orbit-one"></div><div class="side-orbit orbit-two"></div>
-      <div class="side-copy"><span>26 NOV 2026</span><strong>한 사람의 업무가<br>행사의 흐름을 만듭니다.</strong><small>MY TASK · MY PLACE · MY NEXT STEP</small></div>
-      <div class="side-index">01 <i></i> 1126</div>
-    </div>
-  </div>
-
-  <div id="appShell" class="app-shell hidden">
+  <div id="appShell" class="app-shell">
     <header class="topbar">
       <a class="brand-lockup" href="#top" aria-label="1126 홈으로 이동">
         <div class="brand-symbol">SCK</div>
         <div><strong>WORK GUIDE</strong><span>EVENT OPERATIONS · 1126</span></div>
       </a>
       <div class="topbar-right">
-        <div class="live-status"><i></i><span>LIVE SHEET</span></div>
-        <div class="user-chip"><span id="userInitial" class="user-avatar">S</span><span id="userEmail">사용자</span></div>
-        <button id="signOutBtn" class="icon-button" type="button" aria-label="로그아웃" title="로그아웃"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3m9-8h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/></svg></button>
+        <div class="live-status"><i></i><span>PUBLIC LIVE SHEET</span></div>
+        <div class="user-chip"><span class="user-avatar">1126</span><span>링크로 바로 접속</span></div>
       </div>
     </header>
 
@@ -332,28 +306,32 @@
     state.isLoading = true;
     $('refreshBtn').classList.add('busy');
     $('refreshBtn').disabled = true;
-    if (initial) setLoginMessage('스프레드시트 데이터를 불러오고 있습니다.');
+    if (initial) showToast('공개 행사 데이터를 불러오고 있습니다.');
     try {
-      const metadataUrl = new URL(`${API_BASE}${encodeURIComponent(CONFIG.spreadsheetId)}`);
-      metadataUrl.searchParams.set('fields', 'properties(timeZone),sheets(properties(sheetId,title,gridProperties(rowCount,columnCount)))');
-      const metadata = await googleFetch(metadataUrl.toString());
-      const sheets = (metadata.sheets || []).map((sheet) => sheet.properties).filter(Boolean);
-      if (!sheets.length) throw new Error('스프레드시트의 탭 정보를 찾을 수 없습니다.');
-      const ranges = sheets.map((sheet) => {
-        const rows = Math.min(Math.max(Number(sheet.gridProperties?.rowCount || 1000), 1), 1500);
-        const cols = Math.min(Math.max(Number(sheet.gridProperties?.columnCount || 26), 1), 40);
-        return `${quoteSheetTitle(sheet.title)}!A1:${columnToLetter(cols)}${rows}`;
-      });
-      const batchUrl = new URL(`${API_BASE}${encodeURIComponent(CONFIG.spreadsheetId)}/values:batchGet`);
-      ranges.forEach((range) => batchUrl.searchParams.append('ranges', range));
-      batchUrl.searchParams.set('majorDimension', 'ROWS');
-      batchUrl.searchParams.set('valueRenderOption', 'FORMATTED_VALUE');
-      const batch = await googleFetch(batchUrl.toString());
-      state.workbook = sheets.map((sheet, index) => ({
-        title: sheet.title,
-        sheetId: sheet.sheetId,
-        values: batch.valueRanges?.[index]?.values || []
+      const tabs = Array.isArray(CONFIG.sheetTabs) ? CONFIG.sheetTabs : [];
+      if (!CONFIG.spreadsheetId || !tabs.length) throw new Error('공개 데이터 설정을 찾을 수 없습니다.');
+      const loaded = await Promise.all(tabs.map(async (tab) => {
+        const url = new URL(`https://docs.google.com/spreadsheets/d/${encodeURIComponent(CONFIG.spreadsheetId)}/gviz/tq`);
+        url.searchParams.set('gid', String(tab.gid));
+        url.searchParams.set('headers', '0');
+        url.searchParams.set('tqx', 'out:json');
+        url.searchParams.set('_', String(Date.now()));
+        const response = await fetch(url.toString(), { method: 'GET', cache: 'no-store', credentials: 'omit' });
+        if (!response.ok) throw new Error(`${tab.title} 데이터를 불러오지 못했습니다. (${response.status})`);
+        const raw = await response.text();
+        const first = raw.indexOf('{');
+        const last = raw.lastIndexOf('}');
+        if (first < 0 || last <= first) throw new Error(`${tab.title} 응답을 해석할 수 없습니다.`);
+        const payload = JSON.parse(raw.slice(first, last + 1));
+        if (payload.status && payload.status !== 'ok') {
+          throw new Error(payload.errors?.[0]?.detailed_message || `${tab.title} 공개 권한을 확인해 주세요.`);
+        }
+        const values = (payload.table?.rows || []).map((row) =>
+          (row.c || []).map((cell) => cell ? (cell.f ?? cell.v ?? '') : '')
+        );
+        return { title: tab.title, sheetId: Number(tab.gid), values };
       }));
+      state.workbook = loaded;
       state.lastSync = new Date();
       const staff = getStaffNames();
       renderPersonOptions(staff);
@@ -362,12 +340,11 @@
       renderAll();
       updateFreshness();
       hideAppNotice();
-      if (initial) setLoginMessage('');
-      if (!initial) showToast('스프레드시트 최신 내용을 반영했습니다.');
+      if (!staff.length) throw new Error('담당자 목록을 찾지 못했습니다. 공개 데이터의 업무분장 탭을 확인해 주세요.');
+      if (!initial) showToast('최신 스프레드시트 내용을 반영했습니다.');
     } catch (error) {
-      if (initial) throw error;
-      showAppNotice(`최신 데이터를 불러오지 못했습니다. 기존 화면은 유지합니다. ${error.message}`);
-      showToast('새로고침에 실패했습니다. 연결 상태를 확인해 주세요.');
+      showAppNotice(`데이터를 불러오지 못했습니다. 공개 데이터 시트의 게시 설정을 확인해 주세요. ${error.message}`);
+      if (!initial) showToast('새로고침에 실패했습니다.');
     } finally {
       state.isLoading = false;
       $('refreshBtn').classList.remove('busy');
@@ -814,8 +791,6 @@
   }
 
   function bindEvents() {
-    $('googleSignIn').addEventListener('click', login);
-    $('signOutBtn').addEventListener('click', signOut);
     $('refreshBtn').addEventListener('click', () => { state.followCurrent = true; loadWorkbook(false); });
     $('personSelect').addEventListener('change', (event) => {
       state.selectedPerson = event.target.value;
@@ -848,17 +823,19 @@
         $('chatInput').focus();
       }
     });
-    window.addEventListener('online', () => showToast('인터넷 연결이 복구되었습니다.'));
-    window.addEventListener('offline', () => showAppNotice('인터넷 연결이 끊어졌습니다. 기존에 불러온 데이터는 화면에 남아 있으며, 연결이 복구되면 새로고침해 주세요.'));
+    window.addEventListener('online', () => { showToast('인터넷 연결이 복구되었습니다.'); loadWorkbook(false); });
+    window.addEventListener('offline', () => showAppNotice('인터넷 연결이 끊어졌습니다. 다시 연결되면 새로고침해 주세요.'));
   }
 
   function boot() {
     bindEvents();
-    validateConfig();
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
     if (CONFIG.eventDateLabel) document.title = `1126 · ${CONFIG.eventDateLabel} 업무 안내`;
+    updateClock();
+    loadWorkbook(true);
+    startLiveRefresh();
   }
 
   boot();
