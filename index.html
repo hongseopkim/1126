@@ -26,19 +26,63 @@
 @media(max-width:600px){.topbar{height:64px;padding:0 15px}.topbar .brand-symbol{width:34px;height:34px;border-radius:10px}.topbar .brand-lockup strong{font-size:12px}.topbar .brand-lockup span{font-size:8px}.topbar-right{gap:8px}.live-status{font-size:8px}.user-chip{gap:5px;font-size:9px}.user-avatar{width:25px;height:25px}.icon-button{width:29px}.main-content{width:calc(100% - 28px);padding:27px 0 110px}.page-intro{align-items:flex-start;margin-bottom:18px}.page-intro h1{font-size:30px}.page-intro p{font-size:11px;max-width:230px;line-height:1.6}.intro-date{padding-top:5px}.intro-date strong{font-size:14px}.intro-date strong small{font-size:8px}.intro-date>span:last-child{font-size:10px}.person-bar{padding:11px;border-radius:13px;align-items:flex-start;flex-direction:column;gap:10px}.person-label{gap:8px}.person-icon{width:31px;height:31px}.person-label strong{font-size:12px}.person-controls{width:100%}.person-controls select{min-width:0;flex:1;max-width:none;height:42px}.refresh-button{height:42px;padding:0 11px}.refresh-button span{font-size:10px}.view-switch{margin:24px 0 15px;gap:18px}.view-tab{font-size:11px}.current-card{min-height:360px;padding:20px 19px 18px;border-radius:16px}.task-time{font-size:40px}.task-heading h2{font-size:26px}.task-heading p{font-size:11px}.time-block{margin:24px 0 15px}.side-cards{grid-template-columns:1fr;gap:9px}.info-card{min-height:0;padding:15px}.info-card h3{font-size:14px;margin:9px 0 6px}.info-card ul{font-size:10px}.next-card .next-time{font-size:25px;margin-top:9px}.task-navigation{gap:7px;grid-template-columns:1fr 1fr}.nav-hint{display:none}.nav-task-button{height:45px;padding:0 9px;font-size:10px}.timeline-heading h2{font-size:21px}.timeline-layout{gap:12px}.timeline-detail{padding:18px}.data-footer{align-items:flex-start;flex-direction:column;gap:9px;margin-top:23px}.data-freshness{flex-wrap:wrap}.chat-fab{right:16px;bottom:17px;height:54px;padding:0 16px 0 13px}.chat-panel{right:8px;bottom:78px;width:calc(100vw - 16px);height:min(650px,calc(100svh - 95px));border-radius:17px}.login-panel{padding:38px 24px}.login-kicker{margin-top:42px}.login-panel h1{font-size:43px}.login-copy{font-size:12px}.toast{bottom:82px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
+  
+/* Temporary event passcode gate */
+.pin-gate{min-height:100svh;display:grid;grid-template-columns:minmax(320px,1fr) minmax(320px,1fr);background:#fff}
+.pin-panel{width:min(470px,100%);padding:clamp(28px,5vw,64px);align-self:center;justify-self:center}
+.pin-kicker{margin-top:62px;color:var(--red);font:10px var(--medium);letter-spacing:.18em}
+.pin-panel h1{font:clamp(34px,4.2vw,48px)/1.18 var(--bold);letter-spacing:-.06em;margin:13px 0 10px}
+.pin-copy{color:var(--muted);font-size:13px;line-height:1.75;margin:0 0 24px}
+.pin-form{display:grid;gap:12px}
+.pin-input{width:100%;height:58px;border:1px solid var(--line);border-radius:13px;background:#fff;padding:0 18px;font:24px var(--bold);letter-spacing:.42em;text-align:center;outline:none}
+.pin-input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(218,41,28,.09)}
+.pin-submit{height:54px;border:0;border-radius:12px;background:var(--red);color:#fff;font:13px var(--medium);transition:.2s}
+.pin-submit:disabled{opacity:.6;cursor:wait}
+.pin-error{min-height:20px;color:var(--red-dark);font-size:11px;text-align:center;margin:0}
+.pin-foot{display:flex;align-items:center;justify-content:center;gap:7px;border-top:1px solid var(--line);padding-top:16px;color:#827E78;font-size:10px;margin-top:18px}
+.pin-side{position:relative;overflow:hidden;background:var(--ink);color:#fff;display:flex;align-items:flex-end;padding:clamp(32px,6vw,76px);min-height:600px}
+.pin-side:before{content:'1126';position:absolute;right:-.1em;top:-.22em;font:clamp(210px,32vw,480px)/1 var(--bold);letter-spacing:-.1em;color:rgba(255,255,255,.035)}
+.pin-side:after{content:'';position:absolute;width:62vw;height:62vw;max-width:760px;max-height:760px;right:-27%;top:-30%;border:1px solid rgba(255,255,255,.13);border-radius:50%;box-shadow:0 0 0 55px rgba(255,255,255,.025),0 0 0 110px rgba(255,255,255,.018)}
+.pin-side-copy{position:relative;z-index:1}
+.pin-side-copy span{font:10px var(--medium);letter-spacing:.2em;color:#E6B4AF}
+.pin-side-copy strong{display:block;font:clamp(28px,3.6vw,44px)/1.3 var(--bold);letter-spacing:-.05em;margin:15px 0 20px}
+.pin-side-copy small{font-size:9px;letter-spacing:.15em;color:#B7B3AD}
+@media(max-width:760px){.pin-gate{grid-template-columns:1fr}.pin-panel{padding:30px 24px;min-height:100svh;display:flex;flex-direction:column;justify-content:center}.pin-kicker{margin-top:48px}.pin-side{display:none}.pin-input{height:56px}}
+
   </style>
   <script src="config.js"></script>
 
 </head>
 <body>
-  <div id="appShell" class="app-shell">
+  <section id="pinGate" class="pin-gate" aria-label="비밀번호 입장">
+    <div class="pin-panel">
+      <a class="brand-lockup" href="#" aria-label="1126 WORK GUIDE">
+        <div class="brand-symbol">SCK</div>
+        <div><strong>WORK GUIDE</strong><span>EVENT OPERATIONS · 1126</span></div>
+      </a>
+      <div class="pin-kicker">PRIVATE EVENT ACCESS</div>
+      <h1>행사 운영 안내</h1>
+      <p class="pin-copy">행사 관계자 전용 페이지입니다.<br>안내받은 4자리 비밀번호를 입력해 주세요.</p>
+      <form id="pinForm" class="pin-form">
+        <input id="pinInput" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" aria-label="4자리 비밀번호" required>
+        <button id="pinSubmit" class="pin-submit" type="submit">입장하기</button>
+        <p id="pinError" class="pin-error" role="alert" aria-live="polite"></p>
+      </form>
+      <div class="pin-foot"><i class="secure-dot"></i><span>행사 관계자 전용 · 임시 운영 페이지</span></div>
+    </div>
+    <div class="pin-side">
+      <div class="pin-side-copy"><span>THURSDAY · NOVEMBER 26</span><strong>행사의 모든 순간,<br>한눈에 확인하세요.</strong><small>SAVE THE CHILDREN KOREA · 1126</small></div>
+    </div>
+  </section>
+
+  <div id="appShell" class="app-shell hidden">
     <header class="topbar">
       <a class="brand-lockup" href="#top" aria-label="1126 홈으로 이동">
         <div class="brand-symbol">SCK</div>
         <div><strong>WORK GUIDE</strong><span>EVENT OPERATIONS · 1126</span></div>
       </a>
       <div class="topbar-right">
-        <div class="live-status"><i></i><span>PUBLIC LIVE SHEET</span></div>
+        <div class="live-status"><i></i><span>PASSCODE ACCESS</span></div>
         <div class="user-chip"><span class="user-avatar">1126</span><span>링크로 바로 접속</span></div>
       </div>
     </header>
@@ -78,7 +122,7 @@
         <div class="timeline-layout"><div id="timelineList" class="timeline-list"><div class="empty-state">업무 목록을 불러오는 중입니다.</div></div><aside class="timeline-detail"><div class="detail-label">SELECTED TASK</div><div id="detailTime" class="detail-time">--:--</div><h3 id="detailTitle">업무를 선택해 주세요.</h3><p id="detailDescription">왼쪽 업무를 선택하면 세부 내용이 표시됩니다.</p><div class="detail-place"><span>장소</span><strong id="detailPlace">미기재</strong></div><div class="detail-notes"><span>주의사항</span><ul id="detailNotes"><li>해당 업무를 선택해 주세요.</li></ul></div><div class="detail-nav"><button id="detailPrevBtn" type="button">← 이전</button><button id="detailNextBtn" type="button">다음 →</button></div></aside></div>
       </section>
 
-      <section class="data-footer"><div class="data-freshness"><span class="fresh-dot"></span><span>스프레드시트 실시간 연결</span><b id="lastSynced">마지막 동기화 대기 중</b></div><a id="sourceSheetLink" href="https://docs.google.com/spreadsheets/d/18stoQi-teFxOen7fOA7-4yJ7w4NXwRg8s7yt0CdnJyA/edit" target="_blank" rel="noopener">앱 공개 데이터 시트 <span>↗</span></a></section>
+      <section class="data-footer"><div class="data-freshness"><span class="fresh-dot"></span><span>암호화된 행사 데이터</span><b id="lastSynced">마지막 동기화 대기 중</b></div><span class="source-sheet-note">행사 운영 데이터</span></section>
       <div id="appNotice" class="app-notice hidden" role="status"></div>
     </main>
 
@@ -117,7 +161,8 @@
     isLoading: false,
     lastSync: null,
     refreshTimer: null,
-    clockTimer: null
+    clockTimer: null,
+    pinPassword: ''
   };
 
   const SENSITIVE_HEADER = /(연락처|전화번호|휴대폰|휴대전화|이메일|e-?mail|개인정보|동의여부|동의여부|주민등록)/i;
@@ -301,38 +346,75 @@
     setLoginMessage('로그아웃되었습니다. 다시 이용하려면 로그인해 주세요.');
   }
 
+  function base64ToBytes(value) {
+    const binary = atob(value);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+
+  async function decryptEventData(envelope, password) {
+    const material = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(password),
+      'PBKDF2',
+      false,
+      ['deriveKey']
+    );
+    const key = await crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        salt: base64ToBytes(envelope.salt),
+        iterations: Number(envelope.iterations),
+        hash: 'SHA-256'
+      },
+      material,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+    const compressed = await crypto.subtle.decrypt(
+      {
+        name: 'AES-GCM',
+        iv: base64ToBytes(envelope.iv),
+        additionalData: new TextEncoder().encode('SCK-1126-v1')
+      },
+      key,
+      base64ToBytes(envelope.ciphertext)
+    );
+    let plainBuffer = compressed;
+    if (envelope.compression === 'gzip') {
+      if (!('DecompressionStream' in window)) {
+        throw new Error('이 브라우저는 데이터 압축 해제를 지원하지 않습니다.');
+      }
+      const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip'));
+      plainBuffer = await new Response(stream).arrayBuffer();
+    }
+    return JSON.parse(new TextDecoder().decode(plainBuffer));
+  }
+
   async function loadWorkbook(initial = false) {
-    if (state.isLoading) return;
+    if (state.isLoading) return false;
     state.isLoading = true;
     $('refreshBtn').classList.add('busy');
     $('refreshBtn').disabled = true;
-    if (initial) showToast('공개 행사 데이터를 불러오고 있습니다.');
     try {
-      const tabs = Array.isArray(CONFIG.sheetTabs) ? CONFIG.sheetTabs : [];
-      if (!CONFIG.spreadsheetId || !tabs.length) throw new Error('공개 데이터 설정을 찾을 수 없습니다.');
-      const loaded = await Promise.all(tabs.map(async (tab) => {
-        const url = new URL(`https://docs.google.com/spreadsheets/d/${encodeURIComponent(CONFIG.spreadsheetId)}/gviz/tq`);
-        url.searchParams.set('gid', String(tab.gid));
-        url.searchParams.set('headers', '0');
-        url.searchParams.set('tqx', 'out:json');
-        url.searchParams.set('_', String(Date.now()));
-        const response = await fetch(url.toString(), { method: 'GET', cache: 'no-store', credentials: 'include' });
-        if (!response.ok) throw new Error(`${tab.title} 데이터를 불러오지 못했습니다. (${response.status})`);
-        const raw = await response.text();
-        const first = raw.indexOf('{');
-        const last = raw.lastIndexOf('}');
-        if (first < 0 || last <= first) throw new Error(`${tab.title} 응답을 해석할 수 없습니다.`);
-        const payload = JSON.parse(raw.slice(first, last + 1));
-        if (payload.status && payload.status !== 'ok') {
-          throw new Error(payload.errors?.[0]?.detailed_message || `${tab.title} 공개 권한을 확인해 주세요.`);
-        }
-        const values = (payload.table?.rows || []).map((row) =>
-          (row.c || []).map((cell) => cell ? (cell.f ?? cell.v ?? '') : '')
-        );
-        return { title: tab.title, sheetId: Number(tab.gid), values };
+      if (!state.pinPassword) throw new Error('비밀번호를 먼저 입력해 주세요.');
+      const url = new URL('./data.enc.json', window.location.href);
+      url.searchParams.set('v', String(Date.now()));
+      const response = await fetch(url.toString(), { method: 'GET', cache: 'no-store', credentials: 'omit' });
+      if (!response.ok) throw new Error(`행사 데이터를 불러오지 못했습니다. (${response.status})`);
+      const envelope = await response.json();
+      const payload = await decryptEventData(envelope, state.pinPassword);
+      if (!Array.isArray(payload.sheets) || !payload.sheets.length) {
+        throw new Error('행사 데이터 구성이 올바르지 않습니다.');
+      }
+      state.workbook = payload.sheets.map((sheet) => ({
+        title: sheet.title,
+        sheetId: sheet.sheetId,
+        values: sheet.values || []
       }));
-      state.workbook = loaded;
-      state.lastSync = new Date();
+      state.lastSync = payload.snapshotAt ? new Date(payload.snapshotAt) : new Date();
       const staff = getStaffNames();
       renderPersonOptions(staff);
       state.tasks = state.selectedPerson ? parseTasksForPerson(state.selectedPerson) : [];
@@ -340,11 +422,14 @@
       renderAll();
       updateFreshness();
       hideAppNotice();
-      if (!staff.length) throw new Error('담당자 목록을 찾지 못했습니다. 공개 데이터의 업무분장 탭을 확인해 주세요.');
-      if (!initial) showToast('최신 스프레드시트 내용을 반영했습니다.');
+      if (!staff.length) throw new Error('담당자 목록을 찾지 못했습니다. 업무분장 데이터를 확인해 주세요.');
+      if (!initial) showToast('행사 데이터를 다시 불러왔습니다.');
+      return true;
     } catch (error) {
-      showAppNotice(`데이터를 불러오지 못했습니다. 공개 데이터 시트의 게시 설정을 확인해 주세요. ${error.message}`);
-      if (!initial) showToast('새로고침에 실패했습니다.');
+      if (initial) throw error;
+      showAppNotice(`행사 데이터를 다시 불러오지 못했습니다. ${error.message}`);
+      showToast('데이터 새로고침에 실패했습니다.');
+      return false;
     } finally {
       state.isLoading = false;
       $('refreshBtn').classList.remove('busy');
@@ -661,7 +746,7 @@
   function updateFreshness() {
     if (!state.lastSync) return;
     const time = new Intl.DateTimeFormat('ko-KR', { timeZone: CONFIG.timezone || 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(state.lastSync);
-    $('lastSynced').textContent = `마지막 동기화 ${time}`;
+    $('lastSynced').textContent = `데이터 기준 ${new Intl.DateTimeFormat('ko-KR', { timeZone: CONFIG.timezone || 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(state.lastSync)}`;
   }
 
   function moveTask(direction) {
@@ -762,10 +847,10 @@
       appendChatMessage('assistant', `“${query}”와 일치하는 내용을 찾지 못했습니다. 다른 단어로 검색하거나 탭 이름을 입력해 주세요.`);
       return;
     }
-    const heading = `<strong>“${escapeHtml(query)}” 검색 결과 ${results.length}건</strong><p>스프레드시트 원본에서 일치하는 항목을 찾았습니다. 연락처와 이메일은 표시하지 않습니다.</p>`;
+    const heading = `<strong>“${escapeHtml(query)}” 검색 결과 ${results.length}건</strong><p>행사 운영 데이터에서 일치하는 항목을 찾았습니다. 연락처와 이메일은 표시하지 않습니다.</p>`;
     const resultHtml = results.map((result) => {
       const fields = result.fields.map((field) => `<div class="result-field"><b>${escapeHtml(field.label)}</b><span>${escapeHtml(field.value)}</span></div>`).join('');
-      return `<article class="search-result"><div class="search-result-head"><strong>${escapeHtml(result.sheetTitle)}</strong><span>${result.rowNumber}행</span></div><div class="result-fields">${fields}</div><a class="result-link" href="${escapeHtml(result.sourceUrl)}" target="_blank" rel="noopener">원본에서 확인 ↗</a></article>`;
+      return `<article class="search-result"><div class="search-result-head"><strong>${escapeHtml(result.sheetTitle)}</strong><span>${result.rowNumber}행</span></div><div class="result-fields">${fields}</div><span class="result-link">앱 데이터 기준</span></article>`;
     }).join('');
     appendChatMessage('assistant', `${heading}${resultHtml}`, true);
   }
@@ -786,11 +871,37 @@
   function startLiveRefresh() {
     window.clearInterval(state.refreshTimer);
     window.clearInterval(state.clockTimer);
-    state.refreshTimer = window.setInterval(() => loadWorkbook(false), Number(CONFIG.autoRefreshMs || 60000));
+    const refreshMs = Number(CONFIG.autoRefreshMs || 0);
+    if (refreshMs > 0) state.refreshTimer = window.setInterval(() => loadWorkbook(false), refreshMs);
     state.clockTimer = window.setInterval(updateClock, 1000);
   }
 
   function bindEvents() {
+    $('pinInput').addEventListener('input', (event) => { event.target.value = event.target.value.replace(/\\D/g, '').slice(0, 4); });
+    $('pinForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const pin = $('pinInput').value.trim();
+      if (!/^\\d{4}$/.test(pin)) { $('pinError').textContent = '숫자 4자리를 입력해 주세요.'; return; }
+      $('pinSubmit').disabled = true;
+      $('pinSubmit').textContent = '확인 중...';
+      $('pinError').textContent = '';
+      state.pinPassword = pin;
+      try {
+        await loadWorkbook(true);
+        $('pinGate').classList.add('hidden');
+        $('appShell').classList.remove('hidden');
+        $('pinInput').value = '';
+        startLiveRefresh();
+      } catch (error) {
+        state.pinPassword = '';
+        $('pinInput').value = '';
+        $('pinError').textContent = error.message.includes('압축 해제') || error.message.includes('불러오지 못') ? error.message : '비밀번호가 올바르지 않습니다. 다시 입력해 주세요.';
+        $('pinInput').focus();
+      } finally {
+        $('pinSubmit').disabled = false;
+        $('pinSubmit').textContent = '입장하기';
+      }
+    });
     $('refreshBtn').addEventListener('click', () => { state.followCurrent = true; loadWorkbook(false); });
     $('personSelect').addEventListener('change', (event) => {
       state.selectedPerson = event.target.value;
@@ -833,9 +944,7 @@
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
     if (CONFIG.eventDateLabel) document.title = `1126 · ${CONFIG.eventDateLabel} 업무 안내`;
-    updateClock();
-    loadWorkbook(true);
-    startLiveRefresh();
+    $('pinInput').focus();
   }
 
   boot();
