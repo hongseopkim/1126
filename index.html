@@ -78,7 +78,7 @@
         <div class="timeline-layout"><div id="timelineList" class="timeline-list"><div class="empty-state">업무 목록을 불러오는 중입니다.</div></div><aside class="timeline-detail"><div class="detail-label">SELECTED TASK</div><div id="detailTime" class="detail-time">--:--</div><h3 id="detailTitle">업무를 선택해 주세요.</h3><p id="detailDescription">왼쪽 업무를 선택하면 세부 내용이 표시됩니다.</p><div class="detail-place"><span>장소</span><strong id="detailPlace">미기재</strong></div><div class="detail-notes"><span>주의사항</span><ul id="detailNotes"><li>해당 업무를 선택해 주세요.</li></ul></div><div class="detail-nav"><button id="detailPrevBtn" type="button">← 이전</button><button id="detailNextBtn" type="button">다음 →</button></div></aside></div>
       </section>
 
-      <section class="data-footer"><div class="data-freshness"><span class="fresh-dot"></span><span>스프레드시트 실시간 연결</span><b id="lastSynced">마지막 동기화 대기 중</b></div><a id="sourceSheetLink" href="https://docs.google.com/spreadsheets/d/1R1kg4K9uqjdAfAiRJ9lmeK-EJAHzI4keIXkYD4vVnTQ/edit" target="_blank" rel="noopener">원본 스프레드시트 <span>↗</span></a></section>
+      <section class="data-footer"><div class="data-freshness"><span class="fresh-dot"></span><span>스프레드시트 실시간 연결</span><b id="lastSynced">마지막 동기화 대기 중</b></div><a id="sourceSheetLink" href="https://docs.google.com/spreadsheets/d/18stoQi-teFxOen7fOA7-4yJ7w4NXwRg8s7yt0CdnJyA/edit" target="_blank" rel="noopener">앱 공개 데이터 시트 <span>↗</span></a></section>
       <div id="appNotice" class="app-notice hidden" role="status"></div>
     </main>
 
@@ -316,7 +316,7 @@
         url.searchParams.set('headers', '0');
         url.searchParams.set('tqx', 'out:json');
         url.searchParams.set('_', String(Date.now()));
-        const response = await fetch(url.toString(), { method: 'GET', cache: 'no-store', credentials: 'omit' });
+        const response = await fetch(url.toString(), { method: 'GET', cache: 'no-store', credentials: 'include' });
         if (!response.ok) throw new Error(`${tab.title} 데이터를 불러오지 못했습니다. (${response.status})`);
         const raw = await response.text();
         const first = raw.indexOf('{');
