@@ -446,9 +446,12 @@
     if (!sheet) return [];
     const names = new Set();
     for (const row of sheet.values) {
-      const hasScheduleHeaders = row.some((cell) => normalize(cell) === '시작') && row.some((cell) => normalize(cell) === '종료') && row.some((cell) => normalize(cell) === '프로그램');
-      if (!hasScheduleHeaders) continue;
-      row.forEach((cell) => {
+      const startIndex = row.findIndex((cell) => normalize(cell) === '시작');
+      const endIndex = row.findIndex((cell) => normalize(cell) === '종료');
+      const programIndex = row.findIndex((cell) => normalize(cell) === '프로그램');
+      if (startIndex < 0 || endIndex < 0 || programIndex < 0) continue;
+      row.forEach((cell, index) => {
+        if (index <= programIndex + 1) return;
         const name = String(cell ?? '').trim();
         if (STAFF_NAME_PATTERN.test(name) && !['업무분장', '담당자', '시스템'].includes(name)) names.add(name);
       });
@@ -487,6 +490,7 @@
       if (startIndex < 0 || endIndex < 0 || programIndex < 0) return;
       const staffColumns = [];
       row.forEach((cell, index) => {
+        if (index <= programIndex + 1) return;
         const name = String(cell ?? '').trim();
         if (STAFF_NAME_PATTERN.test(name)) staffColumns.push({ name, index });
       });
