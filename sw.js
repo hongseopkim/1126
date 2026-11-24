@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sck-1126-shell-v2';
+const CACHE_NAME = 'sck-1126-shell-v3';
 const SHELL = ['./', './index.html', './config.js', './favicon.svg', './manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
@@ -22,11 +22,12 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
 
-  const isAppShell = request.mode === 'navigate'
+  const isNetworkFirst = request.mode === 'navigate'
     || url.pathname.endsWith('/index.html')
-    || url.pathname.endsWith('/config.js');
+    || url.pathname.endsWith('/config.js')
+    || url.pathname.endsWith('/data.enc.json');
 
-  if (isAppShell) {
+  if (isNetworkFirst) {
     event.respondWith(
       fetch(request, { cache: 'no-store' })
         .then((response) => {
