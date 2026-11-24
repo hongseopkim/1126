@@ -28,3 +28,8 @@
 
 - 저장소: https://github.com/hongseopkim/1126
 - GitHub Actions가 `main` 변경 시 GitHub Pages에 배포합니다.
+
+
+## Temporary operation
+
+- 행사 당일에는 PIN 입장 화면과 암호화된 행사 데이터 스냅샷을 사용합니다.
