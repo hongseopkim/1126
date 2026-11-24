@@ -427,15 +427,23 @@
       if (!response.ok) throw new Error(`행사 데이터를 불러오지 못했습니다. (${response.status})`);
       const envelope = await response.json();
       const payload = await decryptEventData(envelope, state.pinPassword);
-      if (!Array.isArray(payload.sheets) || !payload.sheets.length) {
+      const specialUrl = new URL('./data-special.enc.json', window.location.href);
+      specialUrl.searchParams.set('v', String(Date.now()));
+      const specialResponse = await fetch(specialUrl.toString(), { method: 'GET', cache: 'no-store', credentials: 'omit' });
+      if (!specialResponse.ok) throw new Error(`내빈·주차·케이터링 정보를 불러오지 못했습니다. (${specialResponse.status})`);
+      const specialEnvelope = await specialResponse.json();
+      const specialPayload = await decryptEventData(specialEnvelope, state.pinPassword);
+      if (!Array.isArray(payload.sheets) || !payload.sheets.length || !Array.isArray(specialPayload.sheets)) {
         throw new Error('행사 데이터 구성이 올바르지 않습니다.');
       }
-      state.workbook = payload.sheets.map((sheet) => ({
+      const specialTitles = new Set(specialPayload.sheets.map((sheet) => sheet.title));
+      const baseSheets = payload.sheets.filter((sheet) => sheet.title !== '물품리스트' && !specialTitles.has(sheet.title));
+      state.workbook = [...baseSheets, ...specialPayload.sheets].map((sheet) => ({
         title: sheet.title,
         sheetId: sheet.sheetId,
         values: sheet.values || []
       }));
-      state.lastSync = payload.snapshotAt ? new Date(payload.snapshotAt) : new Date();
+      state.lastSync = specialPayload.snapshotAt ? new Date(specialPayload.snapshotAt) : (payload.snapshotAt ? new Date(payload.snapshotAt) : new Date());
       const staff = getStaffNames();
       renderPersonOptions(staff);
       state.tasks = state.selectedPerson ? parseTasksForPerson(state.selectedPerson) : [];
