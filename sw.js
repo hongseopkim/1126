@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sck-1126-shell-v3';
+const CACHE_NAME = 'sck-1126-shell-v4';
 const SHELL = ['./', './index.html', './config.js', './favicon.svg', './manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
@@ -25,7 +25,8 @@ self.addEventListener('fetch', (event) => {
   const isNetworkFirst = request.mode === 'navigate'
     || url.pathname.endsWith('/index.html')
     || url.pathname.endsWith('/config.js')
-    || url.pathname.endsWith('/data.enc.json');
+    || url.pathname.endsWith('/data.enc.json')
+    || url.pathname.endsWith('/data-special.enc.json');
 
   if (isNetworkFirst) {
     event.respondWith(
