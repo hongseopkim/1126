@@ -1,0 +1,13 @@
+{
+  "name": "1126 · SCK Work Guide",
+  "short_name": "1126 업무안내",
+  "description": "행사 당일 개인별 실시간 업무 안내 및 스프레드시트 검색",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F4F2EF",
+  "theme_color": "#DA291C",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
